@@ -1,0 +1,158 @@
+﻿@using KKCarpoolMNGMNT.Services;
+@model TravelPlanDTO
+@{
+	ViewData["Title"] = "Created Travel Plan";
+}
+<div class="card">
+	<div class="card-header">
+		Create travel plan
+	</div>
+	<div class="card-body">
+		<div class="col-md-6 offset-md-3">
+			<div class="row">
+				<div class="card card-body bg-light">
+					<label asp-for="@Model.SelectedEmployeesId">Click on the textbox and select employees for ride (True == IsDriver)</label>
+					<div class="form-inline">
+						<select class="form-control mb-2 col-md-4" asp-for="@Model.SelectedEmployeesId" id="employeeId" asp-items="@(new SelectList(Model.ListOfEmployees,"Id","Name","Name","IsDriver"))"></select>
+						<button type="button" id="addEmployee" class="btn btn-secondary mb-2 mx-2">Add employee to car</button>
+					</div>
+				</div>
+				<div class="col-md-4 mb-3">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 offset-md-3">
+			<div class="row">
+				<div class="card card-body bg-light">
+					<table class="table" id="employeeOnRideTable">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col" style="width: 25%">Id</th>
+								<th scope="col" style="width: 50%">Name</th>
+								@*<th scope="col" style="width: 20%">IsDriver</th>*@
+								<th scope="col" style="width: 15%"></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<br></br>
+		<div class="col-md-6 offset-md-3">
+			<button type="button" id="createRide" class="btn btn-primary">Create ride</button>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalLabel">Warning !</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id="modalBody"></div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script type="text/javascript">
+
+		var employeeList = [];
+
+		var selectedEmployees = @Html.Raw(Json.Serialize(Model.SelectedEmployees));
+
+		if (selectedEmployees != null) {
+			for (var i = 0; i < selectedEmployees.length; i++) {
+
+				var employeeName = selectedEmployees[i].name;
+				var employeeId = selectedEmployees[i].id;
+				//var employeeHasDriverLic = selectedEmployees[i].isDriver;
+				//'<tr><td>' + employeeHasDriverLic
+
+				$('#employeeOnRideTable').append('<tr><td>' + employeeId + '</td><td>' + employeeName + '</td><td><button class="btn btn-secondary">Delete</td></tr>');
+
+				employeeList.push(employeeId);
+			}
+		}
+
+		var startLocation = @Html.Raw(Json.Serialize(Model.StartLocation));
+		var endLocation = @Html.Raw(Json.Serialize(Model.EndLocation));
+		var startDate = @Html.Raw(Json.Serialize(Model.StartDate));
+		var endDate = @Html.Raw(Json.Serialize(Model.EndDate));
+		var selectedCarPlates = @Html.Raw(Json.Serialize(Model.SelectedCarPlates));
+		var id = @Html.Raw(Json.Serialize(Model.Id));
+
+		var dataObject = {
+			"StartLocation": startLocation,
+			"EndLocation": endLocation,
+			"StartDate": startDate,
+			"EndDate": endDate,
+			"EmployeeList": employeeList,
+			"SelectedCarPlates": selectedCarPlates,
+			"ListOfPassengersIds": employeeList,
+			"Id": id
+		};
+
+		$(document).ready(function () {
+
+			$("#addEmployee").click(function () {
+				var employeeName = $("#employeeId :selected").text();
+				var employeeId = $("#employeeId").val();
+
+
+
+				var alreadyOnList = employeeList.find(function (element) {
+					return element == employeeId;
+				});
+
+				if (alreadyOnList) {
+					$('#modalBody').html("Selected passenger is already on the list!");
+					$('#warningModal').modal('toggle');
+				}
+				else {
+					$('#employeeOnRideTable').append('<tr><td>' + employeeId + '</td><td>' + employeeName + '</td><td><button class="btn btn-secondary">Delete</td></tr>');
+
+					employeeList.push(employeeId);
+				}
+			});
+
+			$("#employeeOnRideTable").on("click", ".btn", function () {
+				var employeeId = $(this).closest("tr").children()[0].innerText;
+
+				for (var i = 0; i < employeeList.length; i++) {
+					if (employeeList[i] == employeeId) {
+						employeeList.splice(i, 1);
+					};
+				};
+
+				$(this).closest("tr").remove();
+			});
+
+			$("#createRide").click(function () {
+				$.ajax({
+					type: "POST",
+					contentType: "application/json; charset=utf-8",
+					url: "/Home/SaveRide",
+					data: JSON.stringify(dataObject),
+					error: function (response) {
+					},
+					success: function (response) {
+						if (response.error != null) {
+							$('#modalBody').html(response.error);
+							$('#warningModal').modal('toggle');
+						}
+						else {
+							window.location.assign("/Home/Carpools");
+						}
+					}
+				});
+			});
+		});
+	</script>
+}

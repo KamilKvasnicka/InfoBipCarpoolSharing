@@ -1,0 +1,47 @@
+﻿@model List<KKCarpoolMNGMNT.Models.TravelPlan>
+@{
+	ViewData["Title"] = "Current travel plans";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="bg-light">
+	<div class="row">
+		@foreach (var travelPlan in Model)
+		{
+			<div class="bg-light"   style="width: 20rem; border:dotted; margin-block">
+				<div class= style=" width: 20rem;" >
+					<h7> Start-End Location</h7>
+					<h6>@travelPlan.StartLocation - @travelPlan.EndLocation</h6>
+					<h7> Start-End Date</h7>
+					<h6>@travelPlan.StartDate.ToShortDateString() - @travelPlan.EndDate.ToShortDateString()</h6>
+					<h7 class="bg-light"> Used Car</h7>
+					<h6 style="margin 15 0 0 0 ">@travelPlan.SelectedCar.Name - @travelPlan.SelectedCar.Plates</h6>
+					<h7>Employees in car</h7>
+					<p class="card-text">
+						<ul class="list-group">
+							@if (travelPlan.SelectedEmployees != null)
+							{
+								@foreach (var employee in travelPlan.SelectedEmployees)
+								{
+									<li class="list-group-item">@employee.Name</li>
+								}
+							}
+						</ul>
+					</p>
+					<ul class="list-group">
+						<li class="list-group-item">
+							<a class="active" asp-controller="Home" , asp-action="PickPassengers" asp-route-id="@travelPlan.Id">Edit passengers</a>
+						</li>
+						<li class="list-group-item">
+							<a asp-controller="Home" , asp-action="EditTravelPlan" asp-route-id="@travelPlan.Id">Edit route</a>
+						</li>
+						<li class="list-group-item">
+							<a asp-controller="Home" , asp-action="DeleteTravelPlan" asp-route-id="@travelPlan.Id"><b class="alert-danger">Delete travel plan</b></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+		}
+	</div>
+	</>

@@ -1,0 +1,66 @@
+﻿@model KKCarpoolMNGMNT.Services.TravelPlanDTO
+@{
+	ViewData["Title"] = "CreateTravelPlan";
+}
+
+<div class="card">
+	<div class="card-header">
+		Create travel plan
+	</div>
+	<div class="card-body">
+
+		@using (Html.BeginForm("CreateTravelPlan", "Home", FormMethod.Post))
+		{
+			@Html.HiddenFor(m => m.Id)
+
+			<div class="col-md-6 offset-md-3">
+				<div class="card card-body bg-light">
+					<div class="form-group">
+						<label asp-for="@Model.StartLocation">Start Location</label>
+						<input asp-for="@Model.StartLocation" type="text" class="form-control" />
+						<span asp-validation-for="@Model.StartLocation" class="text-danger"></span>
+					</div>
+
+					<div class="form-group">
+						<label asp-for="@Model.EndLocation">End Location</label>
+						<input asp-for="@Model.EndLocation" type="text" class="form-control" />
+						<span asp-validation-for="@Model.EndLocation" class="text-danger"></span>
+					</div>
+
+					<div class="form-group">
+						<label asp-for="@Model.StartDate">Start Date</label>
+						<input asp-for="@Model.StartDate" type="date" asp-format="{0:d}" class="form-control" />
+						<span asp-validation-for="@Model.StartDate" class="text-danger"></span>
+					</div>
+
+					<div class="form-group">
+						<label asp-for="@Model.EndDate">End Date</label>
+						<input asp-for="@Model.EndDate" type="date" asp-format="{0:d}" class="form-control" />
+						<span asp-validation-for="@Model.EndDate" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+					</div>
+					<div class="form-group">
+						<label asp-for="@Model.SelectedCarPlates">Select Car</label>
+						<select class="form-control" asp-for="@Model.SelectedCarPlates" asp-items="@(new SelectList(Model.ListOfCars, "Plates", "CarType"))"></select>
+						@if (ViewData.ModelState.ContainsKey("CarOnTheRide"))
+						{
+							<span class="text-danger">Car is on the road in this time interval.</span>
+						}
+					</div>
+					<br></br>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary"> Create travel plan</button>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="row">
+				</div>
+			</div>
+
+
+		}
+
+	</div>
+</div>

@@ -1,0 +1,28 @@
+﻿@model IEnumerable<KKCarpoolMNGMNT.Models.Employee>
+@{
+	ViewData["Title"] = "Our Employees";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="card card-body bg-light">
+<table class="table table-bordered,">
+    <thead class="thead-dark",>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Is Driver</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.Name</td>
+                    <td>@employee.IsDriver</td>
+                </tr>
+        }
+    </tbody>
+
+</table>
+</div>
